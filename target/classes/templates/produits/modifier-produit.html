@@ -5,14 +5,92 @@
     <title>Modifier un produit</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<div class="container mt-5">
-    <div class="card shadow-lg rounded-4">
-        <div class="card-header bg-primary text-white d-flex align-items-center">
-            <i class="bi bi-pencil-square me-2 fs-4"></i>
-            <h4 class="mb-0">Modifier un produit</h4>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0b3d0b, #2e7d32, #d0f0d0);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .card {
+            backdrop-filter: blur(15px);
+            background: rgba(255,255,255,0.08);
+            border-radius: 20px;
+            border: 1px solid rgba(46,125,50,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+        }
+
+        .card-header {
+            background: rgba(76,175,80,0.8);
+            border-bottom: none;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.25rem;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.05);
+            color: #f0fff0;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #4caf50;
+            box-shadow: 0 0 0 .15rem rgba(76,175,80,0.2);
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+        }
+
+        label { color: #e0ffe0; font-weight: 500; }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4caf50, #81c784);
+            border-radius: 12px;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 12px rgba(76,175,80,0.5);
+        }
+
+        .btn-outline-secondary {
+            color: #fff;
+            border-color: rgba(255,255,255,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .btn-outline-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 12px rgba(0,0,0,0.3);
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+        }
+
+        img.img-thumbnail {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        img.img-thumbnail:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card shadow-lg mx-auto" style="max-width: 700px;">
+        <div class="card-header d-flex align-items-center">
+            <i class="bi bi-pencil-square me-2 fs-4"></i> Modifier un produit
         </div>
 
         <div class="card-body p-4">
@@ -24,62 +102,52 @@
             <form th:action="@{/produits/modifier/{id}(id=${produit.id})}" th:object="${produit}"
                   method="post" enctype="multipart/form-data" novalidate>
 
-                <!-- Nom -->
                 <div class="mb-3">
-                    <label for="nom" class="form-label fw-semibold">Nom du produit</label>
+                    <label for="nom" class="form-label">Nom du produit</label>
                     <input type="text" id="nom" th:field="*{nom}" class="form-control" required/>
                 </div>
 
-                <!-- Description -->
                 <div class="mb-3">
-                    <label for="description" class="form-label fw-semibold">Description</label>
+                    <label for="description" class="form-label">Description</label>
                     <textarea id="description" th:field="*{description}" class="form-control" rows="3"></textarea>
                 </div>
 
-                <!-- Prix -->
                 <div class="mb-3">
-                    <label for="prixUnitaire" class="form-label fw-semibold">Prix (FCFA)</label>
+                    <label for="prixUnitaire" class="form-label">Prix (FCFA)</label>
                     <input type="number" id="prixUnitaire" th:field="*{prix}" class="form-control" min="0" step="100" required/>
                 </div>
 
-                <!-- Quantité -->
                 <div class="mb-3">
-                    <label for="quantite" class="form-label fw-semibold">Quantité</label>
+                    <label for="quantite" class="form-label">Quantité</label>
                     <input type="number" id="quantite" th:field="*{quantite}" class="form-control" min="1" step="1" required/>
                 </div>
 
-                <!-- Total calculé -->
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Total (FCFA)</label>
+                    <label class="form-label">Total (FCFA)</label>
                     <input type="text" id="prixTotal" class="form-control" readonly/>
                 </div>
 
-                <!-- Image -->
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Image actuelle</label><br>
+                    <label class="form-label">Image actuelle</label><br>
                     <img th:src="@{${produit.image} != null && ${produit.image} != '' ? '/images/produits/' + ${produit.image} : '/images/default.png'}"
                          alt="Image produit"
                          class="img-thumbnail"
                          style="max-width:150px;">
-                    <label for="image" class="form-label fw-semibold mt-2">Changer l’image</label>
+                    <label for="image" class="form-label mt-2">Changer l’image</label>
                     <input type="file" id="image" name="imageFile" class="form-control shadow-sm" accept="image/*" onchange="previewImage(event)">
                     <img id="preview" class="img-thumbnail mt-2" style="max-width:150px; display:none;">
                 </div>
 
-                <!-- Producteur -->
                 <div class="mb-3">
                     <label for="agriculteur" class="form-label">Producteur</label>
                     <select id="agriculteur" name="agriculteurId" class="form-select" required>
-                        <option value="" th:selected="${produit.agriculteur == null}">
-                            -- Sélectionner un producteur --
-                        </option>
-                        <option th:each="p : ${agriculteurs}"
-                                th:value="${p.id}"
+                        <option value="" th:selected="${produit.agriculteur == null}">-- Sélectionner un producteur --</option>
+                        <option th:each="p : ${agriculteurs}" th:value="${p.id}"
                                 th:text="${p.agriculteur != null} ? ${p.agriculteur.prenom} + ' ' + ${p.nom} : 'Aucun agriculteur'">
                         </option>
                     </select>
                 </div>
-                <!-- Boutons -->
+
                 <div class="d-flex justify-content-end mt-4">
                     <a th:href="@{/produits}" class="btn btn-outline-secondary me-2">
                         <i class="bi bi-arrow-left"></i> Retour
@@ -96,7 +164,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Calcul automatique du total
     const inputPrix = document.getElementById('prixUnitaire');
     const inputQuantite = document.getElementById('quantite');
     const inputTotal = document.getElementById('prixTotal');
@@ -111,7 +178,6 @@
     inputQuantite.addEventListener('input', updateTotal);
     document.addEventListener('DOMContentLoaded', updateTotal);
 
-    // Prévisualisation image
     function previewImage(event) {
         const output = document.getElementById('preview');
         if(event.target.files.length === 0) {
@@ -127,5 +193,6 @@
         reader.readAsDataURL(event.target.files[0]);
     }
 </script>
+
 </body>
 </html>

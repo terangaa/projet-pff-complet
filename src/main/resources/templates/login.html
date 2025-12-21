@@ -18,98 +18,47 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(to top, #ffd3b6, #dcedc1 50%, #a8e6cf);
-            overflow-x: hidden;
+            /* Fond avec image réelle */
+            background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+            background-size: cover;
             position: relative;
         }
 
-        /* Soleil animé */
-        .sun {
-            position: absolute;
-            top: 10%;
-            left: 75%;
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle, #fff176, #ffd600);
-            border-radius: 50%;
-            box-shadow: 0 0 60px #ffd600;
-            animation: rotateSun 60s linear infinite;
-        }
-
-        /* Collines */
-        .hill {
-            position: absolute;
-            width: 200%;
-            height: 200px;
-            bottom: 0;
-            left: -50%;
-            background: radial-gradient(circle at 50% 0, #81c784, #388e3c);
-            border-radius: 50%;
-            animation: hillMove 30s ease-in-out infinite alternate;
-        }
-
-        /* Nuages */
+        /* Nuages animés */
         .cloud {
             position: absolute;
             background: #ffffffcc;
             border-radius: 50%;
-            width: 120px;
-            height: 60px;
+            width: 150px;
+            height: 80px;
             animation: cloudMove linear infinite;
             top: 15%;
+            z-index: 1;
         }
-        .cloud:nth-child(1) { left: -150px; animation-duration: 70s; }
-        .cloud:nth-child(2) { left: -300px; animation-duration: 90s; top: 20%; width: 180px; height: 80px; }
-        .cloud:nth-child(3) { left: -500px; animation-duration: 100s; top: 10%; width: 150px; height: 70px; }
-
-        /* Herbes ondulantes */
-        .grass {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 50px;
-            background: repeating-linear-gradient(to right, #388e3c, #388e3c 2px, #43a047 2px, #43a047 4px);
-            animation: grassSway 3s ease-in-out infinite alternate;
-        }
-
-        /* Fleurs animées */
-        .flower {
-            position: absolute;
-            bottom: 40px;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            animation: growFlower 4s ease-in-out infinite alternate, swayFlower 3s ease-in-out infinite alternate;
-        }
-        .flower::before, .flower::after {
-            content: '';
-            position: absolute;
-            border-radius: 50%;
-            background-color: inherit;
-        }
-        .flower::before { width: 15px; height: 15px; left: -10px; top: 0; }
-        .flower::after { width: 15px; height: 15px; left: 10px; top: 0; }
-        .flower:nth-child(1) { left: 20%; background-color:#ff9800; animation-delay: 0.5s; }
-        .flower:nth-child(2) { left: 30%; background-color:#ff4081; animation-delay: 0s; }
-        .flower:nth-child(3) { left: 45%; background-color:#ffeb3b; animation-delay: 1s; }
-        .flower:nth-child(4) { left: 60%; background-color:#ff5722; animation-delay: 2s; }
-        .flower:nth-child(5) { left: 75%; background-color:#e91e63; animation-delay: 3s; }
-        .flower:nth-child(6) { left: 85%; background-color:#4caf50; animation-delay: 1.5s; }
+        .cloud:nth-child(1) { left: -200px; animation-duration: 100s; }
+        .cloud:nth-child(2) { left: -400px; animation-duration: 130s; top: 20%; width: 200px; height: 90px; }
+        .cloud:nth-child(3) { left: -600px; animation-duration: 160s; top: 10%; width: 170px; height: 80px; }
 
         /* Carte de connexion */
         .login-card {
             position: relative;
-            z-index: 10;
+            z-index: 2;
             background-color: rgba(255,255,255,0.95);
             padding: 3rem 2.5rem;
             border-radius: 2rem;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.25);
             width: 100%;
             max-width: 450px;
             text-align: center;
             animation: fadeIn 0.8s ease-in-out;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .login-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 70px rgba(0,0,0,0.3);
         }
         .login-card h2 { color: #2e7d32; font-weight: 800; letter-spacing: 1px; }
+
         .btn-login {
             background: linear-gradient(135deg, #43a047, #8bc34a);
             border: none;
@@ -122,6 +71,7 @@
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(56,142,60,0.3);
         }
+
         .input-group-text { background: #e8f5e9; border: none; color: #2e7d32; }
         .form-control:focus { border-color: #8bc34a; box-shadow: 0 0 8px rgba(139,195,74,0.3); }
         .form-label { font-weight: 600; }
@@ -135,32 +85,20 @@
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        @keyframes rotateSun { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes hillMove { from { transform: translateX(0); } to { transform: translateX(-50px); } }
         @keyframes cloudMove { from { transform: translateX(0); } to { transform: translateX(200vw); } }
-        @keyframes grassSway { from { transform: translateX(0); } to { transform: translateX(5px); } }
-        @keyframes growFlower { from { transform: scale(0.2); } to { transform: scale(1); } }
-        @keyframes swayFlower { from { transform: translateX(0); } to { transform: translateX(5px); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-card { padding: 2rem 1.5rem; }
+        }
     </style>
 </head>
 <body>
 
-<!-- Soleil et collines -->
-<div class="sun"></div>
-<div class="hill"></div>
-
-<!-- Nuages -->
+<!-- Nuages animés -->
 <div class="cloud"></div>
 <div class="cloud"></div>
 <div class="cloud"></div>
-
-<!-- Herbes et fleurs -->
-<div class="grass"></div>
-<div class="flower"></div>
-<div class="flower"></div>
-<div class="flower"></div>
-<div class="flower"></div>
-<div class="flower"></div>
 
 <!-- Carte de connexion -->
 <div class="login-card">

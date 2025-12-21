@@ -3,102 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Panier - PAGAM</title>
+    <title>Mon Panier - AgriShop 🛒</title>
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- CSRF Meta Tags -->
+    <!-- CSRF Meta -->
     <meta th:name="'_csrf'" th:content="${_csrf?.token}"/>
     <meta th:name="'_csrf_header'" th:content="${_csrf?.headerName}"/>
 
     <style>
         body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
         }
+
+        /* Navbar */
+        .nav-header {
+            background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+            padding: 20px 0;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .nav-brand { color: white !important; font-weight: bold; font-size: 1.5rem; }
+        .nav-link-custom { color: white !important; font-weight: 500; margin-left: 15px; transition: color 0.3s ease; }
+        .nav-link-custom:hover { color: #e8f5e9 !important; }
+
+        /* Container */
         .cart-container {
             max-width: 1000px;
             margin: 30px auto;
             background: #fff;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+            transition: all 0.3s ease;
         }
+        .cart-container:hover { box-shadow: 0 20px 45px rgba(0,0,0,0.18); }
+
+        /* Panier vide */
         .cart-empty {
             text-align: center;
             padding: 60px 0;
             font-size: 1.4rem;
             color: #6c757d;
+            animation: fadeIn 1s ease;
         }
-        .cart-table th, .cart-table td {
-            vertical-align: middle;
-            padding: 15px 10px;
+        @keyframes fadeIn { from {opacity:0; transform:translateY(-20px);} to {opacity:1; transform:translateY(0);} }
+
+        /* Tableau panier */
+        .cart-table th, .cart-table td { vertical-align: middle; padding: 15px 10px; }
+        .cart-table thead th { background-color: #4caf50; color: white; border: none; font-weight: 600; }
+        .cart-table tbody tr {
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+            border-radius: 12px;
         }
-        .cart-table thead th {
-            background-color: #2c3e50;
-            color: white;
-            border: none;
-            font-weight: 600;
-        }
-        .btn-clear {
-            background-color: #dc3545;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            font-weight: 500;
-        }
-        .btn-clear:hover {
-            background-color: #c82333;
+        .cart-table tbody tr:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76,175,80,0.15);
+            background-color: #f1f8f3;
+        }
+
+        .quantity-input { width: 80px; text-align: center; border-radius: 10px; border: 1px solid #4caf50; }
+        .product-name { font-weight: 600; color: #2e7d32; }
+
+        /* Section total */
+        .total-section {
+            background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 25px;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(76,175,80,0.2);
+        }
+
+        /* Badges et boutons */
+        .badge { border-radius: 50px; padding: 0.5em 1em; font-weight: 600; }
+        .btn-success-custom {
+            border-radius: 15px;
+            padding: 0.7rem 1.4rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(76,175,80,0.2);
+            background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);
+            color: white;
             transition: all 0.3s ease;
         }
-        .btn-success {
-            padding: 10px 25px;
-            font-weight: 500;
+        .btn-success-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(76,175,80,0.35);
         }
-        .quantity-input {
-            width: 80px;
-            text-align: center;
+        .btn-outline-success-custom {
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            color: #4caf50;
+            border-color: #4caf50;
         }
-        .product-name {
-            font-weight: 600;
-            color: #2c3e50;
+        .btn-outline-success-custom:hover {
+            background: rgba(76,175,80,0.1);
+            transform: translateY(-2px);
         }
-        .total-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
+
+        /* Action buttons */
         .action-buttons {
             display: flex;
             gap: 10px;
             justify-content: flex-end;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
-        .nav-header {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            padding: 15px 0;
-            margin-bottom: 30px;
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1055;
         }
-        .nav-brand {
-            color: white !important;
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-        .nav-link-custom {
-            color: white !important;
-            font-weight: 500;
-        }
-        .nav-link-custom:hover {
-            color: #f8f9fa !important;
-        }
+        .toast { min-width: 250px; }
     </style>
 </head>
 <body>
+
 <!-- Navigation Header -->
 <nav class="navbar navbar-expand-lg nav-header">
     <div class="container">
@@ -106,15 +134,9 @@
             <i class="bi bi-basket"></i> AgriShop
         </a>
         <div class="navbar-nav ms-auto">
-            <a class="nav-link nav-link-custom" th:href="@{/dashboard}">
-                <i class="bi bi-house"></i> Accueil
-            </a>
-            <a class="nav-link nav-link-custom" th:href="@{/produits}">
-                <i class="bi bi-shop"></i> Produits
-            </a>
-            <a class="nav-link nav-link-custom" th:href="@{/auth/logout}">
-                <i class="bi bi-box-arrow-right"></i> Déconnexion
-            </a>
+            <a class="nav-link nav-link-custom" th:href="@{/dashboard}"><i class="bi bi-house"></i> Accueil</a>
+            <a class="nav-link nav-link-custom" th:href="@{/produits}"><i class="bi bi-shop"></i> Produits</a>
+            <a class="nav-link nav-link-custom" th:href="@{/auth/logout}"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
         </div>
     </div>
 </nav>
@@ -122,22 +144,16 @@
 <div class="container">
     <div class="cart-container">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="text-primary">
-                <i class="bi bi-cart3"></i> Mon Panier
-            </h2>
-            <span class="badge bg-primary fs-6">
-                    <span th:text="${nombreArticles}">0</span> article(s)
-                </span>
+            <h2 class="text-success"><i class="bi bi-cart3"></i> Mon Panier</h2>
+            <span class="badge bg-success fs-6" th:text="${nombreArticles} + ' article(s)'">0 article(s)</span>
         </div>
 
         <!-- Panier vide -->
         <div th:if="${#lists.isEmpty(articles)}" class="cart-empty">
-            <i class="bi bi-cart-x" style="font-size: 4rem; color: #dee2e6;"></i>
+            <i class="bi bi-cart-x" style="font-size: 4rem; color: #c8e6c9;"></i>
             <h3 class="mt-3">Votre panier est vide</h3>
             <p class="text-muted">Ajoutez des produits pour commencer vos achats</p>
-            <a th:href="@{/produits}" class="btn btn-primary btn-lg mt-3">
-                <i class="bi bi-arrow-left"></i> Découvrir nos produits
-            </a>
+            <a th:href="@{/produits}" class="btn btn-success-custom btn-lg mt-3"><i class="bi bi-arrow-left"></i> Découvrir nos produits</a>
         </div>
 
         <!-- Panier avec produits -->
@@ -159,21 +175,16 @@
                             <div class="product-name" th:text="${item.produit.nom}">Nom Produit</div>
                             <small class="text-muted" th:if="${item.produit.description}" th:text="${item.produit.description}"></small>
                         </td>
-                        <td>
-                            <span class="fw-bold" th:text="${#numbers.formatDecimal(item.prix, 0, 'COMMA', 2, 'POINT')} + ' FCFA'">0 FCFA</span>
-                        </td>
+                        <td><span class="fw-bold" th:text="${#numbers.formatDecimal(item.prix,0,'COMMA',2,'POINT')} + ' FCFA'">0 FCFA</span></td>
                         <td>
                             <input type="number" min="1" max="100" th:value="${item.quantite}"
                                    class="form-control quantity-input"
                                    th:onchange="modifierQuantite([[${item.produit.id}]], this.value)">
                         </td>
+                        <td><span class="fw-bold text-success" th:text="${#numbers.formatDecimal(item.montantTotal,0,'COMMA',2,'POINT')} + ' FCFA'">0 FCFA</span></td>
                         <td>
-                            <span class="fw-bold text-success" th:text="${#numbers.formatDecimal(item.montantTotal, 0, 'COMMA', 2, 'POINT')} + ' FCFA'">0 FCFA</span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-danger"
-                                    th:onclick="supprimerProduit([[${item.produit.id}]])"
-                                    title="Supprimer du panier">
+                            <button class="btn btn-outline-success-custom btn-sm"
+                                    th:onclick="supprimerProduit([[${item.produit.id}]])" title="Supprimer">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </td>
@@ -182,214 +193,88 @@
                 </table>
             </div>
 
-            <!-- Section Total et Actions -->
-            <div class="total-section">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <h3 class="mb-0">Total Général</h3>
-                        <p class="mb-0 opacity-75" th:text="${nombreArticles} + ' article(s) dans votre panier'"></p>
-                    </div>
-                    <div class="col-md-6 text-end">
-                        <h2 class="mb-0" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')} + ' FCFA'">0 FCFA</h2>
-                    </div>
+            <!-- Section Total -->
+            <div class="total-section d-flex justify-content-between align-items-center">
+                <div>
+                    <h4>Total Général</h4>
+                    <p th:text="${nombreArticles} + ' article(s) dans votre panier'"></p>
                 </div>
+                <h3 th:text="${#numbers.formatDecimal(total,0,'COMMA',2,'POINT')} + ' FCFA'"></h3>
             </div>
 
+            <!-- Action Buttons -->
             <div class="action-buttons">
-                <button class="btn btn-outline-secondary" onclick="viderPanier()">
-                    <i class="bi bi-trash"></i> Vider le panier
-                </button>
-                <a th:href="@{/produits}" class="btn btn-outline-primary">
-                    <i class="bi bi-plus-circle"></i> Continuer mes achats
-                </a>
-                <button class="btn btn-success btn-lg" onclick="validerPanier()">
-                    <i class="bi bi-check-circle"></i> Valider la commande
-                </button>
+                <button class="btn btn-outline-success-custom" onclick="viderPanier()"><i class="bi bi-trash"></i> Vider le panier</button>
+                <a th:href="@{/produits}" class="btn btn-outline-success-custom"><i class="bi bi-plus-circle"></i> Continuer mes achats</a>
+                <button class="btn btn-success-custom btn-lg" onclick="validerPanier()"><i class="bi bi-check-circle"></i> Valider la commande</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    function modifierQuantite(produitId, quantite) {
-        if (quantite < 1) {
-            alert('La quantité doit être au moins 1');
-            location.reload();
-            return;
-        }
-
-        const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
-        const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
-
-        const headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        };
-
-        if (csrfHeader && csrfToken) {
-            headers[csrfHeader] = csrfToken;
-        }
-
-        const formData = new URLSearchParams();
-        if (csrfToken) {
-            formData.append('_csrf', csrfToken);
-        }
-
-        fetch(`/panier/modifier/${produitId}?quantite=${quantite}`, {
-            method: 'POST',
-            headers: headers,
-            body: formData,
-            credentials: 'include'
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erreur lors de la modification');
-                }
-                location.reload();
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                alert('Erreur lors de la modification de la quantité');
-                location.reload();
-            });
+    /* Toast Notification */
+    function showToast(message, type='success'){
+        const container=document.getElementById('toastContainer');
+        const toastEl=document.createElement('div');
+        toastEl.className=`toast align-items-center text-bg-${type} border-0 mb-2`;
+        toastEl.innerHTML=`<div class="d-flex"><div class="toast-body">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+        container.appendChild(toastEl);
+        const toast=new bootstrap.Toast(toastEl,{delay:2500});
+        toast.show();
+        toastEl.addEventListener('hidden.bs.toast',()=>toastEl.remove());
     }
 
-    function supprimerProduit(produitId) {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit du panier ?')) {
-            return;
-        }
-
-        const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
-        const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
-
-        const headers = {};
-        if (csrfHeader && csrfToken) {
-            headers[csrfHeader] = csrfToken;
-        }
-
-        fetch(`/panier/supprimer/${produitId}`, {
-            method: 'DELETE',
-            headers: headers,
-            credentials: 'include'
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erreur lors de la suppression');
-                }
-                location.reload();
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                alert('Erreur lors de la suppression du produit');
-                location.reload();
-            });
+    /* Fonctions panier */
+    function modifierQuantite(produitId, quantite){
+        if(quantite<1){showToast('La quantité doit être au moins 1','danger'); return;}
+        const csrfToken=document.querySelector("meta[name='_csrf']")?.content;
+        const csrfHeader=document.querySelector("meta[name='_csrf_header']")?.content;
+        const headers={'Content-Type':'application/x-www-form-urlencoded'}; if(csrfToken && csrfHeader) headers[csrfHeader]=csrfToken;
+        const formData=new URLSearchParams(); if(csrfToken) formData.append('_csrf',csrfToken);
+        fetch(`/panier/modifier/${produitId}?quantite=${quantite}`,{method:'POST',headers,body:formData,credentials:'include'})
+            .then(r=>{if(!r.ok) throw Error('Erreur'); location.reload();})
+            .catch(e=>showToast('Erreur lors de la modification','danger'));
     }
 
-    function viderPanier() {
-        if (!confirm('Êtes-vous sûr de vouloir vider complètement votre panier ?')) {
-            return;
-        }
-
-        const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
-        const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
-
-        const headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        };
-
-        if (csrfHeader && csrfToken) {
-            headers[csrfHeader] = csrfToken;
-        }
-
-        const formData = new URLSearchParams();
-        if (csrfToken) {
-            formData.append('_csrf', csrfToken);
-        }
-
-        fetch(`/panier/vider`, {
-            method: 'POST',
-            headers: headers,
-            body: formData,
-            credentials: 'include'
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erreur lors du vidage du panier');
-                }
-                location.reload();
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                alert('Erreur lors du vidage du panier');
-                location.reload();
-            });
+    function supprimerProduit(produitId){
+        if(!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return;
+        const csrfToken=document.querySelector("meta[name='_csrf']")?.content;
+        const csrfHeader=document.querySelector("meta[name='_csrf_header']")?.content;
+        const headers={}; if(csrfToken && csrfHeader) headers[csrfHeader]=csrfToken;
+        fetch(`/panier/supprimer/${produitId}`,{method:'DELETE',headers,credentials:'include'})
+            .then(r=>{if(!r.ok) throw Error('Erreur'); showToast('Produit supprimé','success'); location.reload();})
+            .catch(e=>showToast('Erreur lors de la suppression','danger'));
     }
 
-    function validerPanier() {
-        if (!confirm('Confirmer la validation de votre commande ?')) {
-            return;
-        }
+    function viderPanier(){
+        if(!confirm('Êtes-vous sûr de vouloir vider le panier ?')) return;
+        const csrfToken=document.querySelector("meta[name='_csrf']")?.content;
+        const csrfHeader=document.querySelector("meta[name='_csrf_header']")?.content;
+        const headers={'Content-Type':'application/x-www-form-urlencoded'}; if(csrfToken && csrfHeader) headers[csrfHeader]=csrfToken;
+        const formData=new URLSearchParams(); if(csrfToken) formData.append('_csrf',csrfToken);
+        fetch(`/panier/vider`,{method:'POST',headers,body:formData,credentials:'include'})
+            .then(r=>{if(!r.ok) throw Error('Erreur'); showToast('Panier vidé','success'); location.reload();})
+            .catch(e=>showToast('Erreur lors du vidage','danger'));
+    }
 
-        console.log('Validation du panier...');
-
-        const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
-        const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
-
-        const headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        };
-
-        if (csrfHeader && csrfToken) {
-            headers[csrfHeader] = csrfToken;
-        }
-
-        const formData = new URLSearchParams();
-        if (csrfToken) {
-            formData.append('_csrf', csrfToken);
-        }
-
-        console.log('Envoi requête de validation...');
-
-        fetch('/panier/valider', {
-            method: 'POST',
-            headers: headers,
-            body: formData,
-            credentials: 'include'
-        })
-            .then(response => {
-                console.log('Status:', response.status);
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    return response.json();
-                } else {
-                    return response.text().then(text => {
-                        throw new Error('Réponse non JSON: ' + text);
-                    });
-                }
-            })
-            .then(data => {
-                console.log('Réponse JSON:', data);
-                if(data.success) {
-                    alert('✅ ' + data.message);
-
-                    // Redirection vers la page des commandes
-                    if (data.redirectUrl) {
-                        window.location.href = data.redirectUrl;
-                    } else {
-                        window.location.href = '/commandes';
-                    }
-                } else {
-                    alert('❌ Erreur: ' + data.message);
-                    location.reload();
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                alert('❌ Erreur lors de la validation du panier: ' + error.message);
-                location.reload();
-            });
+    function validerPanier(){
+        if(!confirm('Confirmer la validation de votre commande ?')) return;
+        const csrfToken=document.querySelector("meta[name='_csrf']")?.content;
+        const csrfHeader=document.querySelector("meta[name='_csrf_header']")?.content;
+        const headers={'Content-Type':'application/x-www-form-urlencoded'}; if(csrfToken && csrfHeader) headers[csrfHeader]=csrfToken;
+        const formData=new URLSearchParams(); if(csrfToken) formData.append('_csrf',csrfToken);
+        fetch('/panier/valider',{method:'POST',headers,body:formData,credentials:'include'})
+            .then(r=>r.json())
+            .then(data=>{if(data.success){showToast(data.message,'success'); window.location.href=data.redirectUrl || '/commandes';}else{showToast(data.message,'danger'); location.reload();}})
+            .catch(e=>showToast('Erreur: '+e.message,'danger'));
     }
 </script>
 </body>

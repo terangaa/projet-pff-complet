@@ -23,6 +23,7 @@ public class Produit {
     private Integer quantite;
     private int stock;
     private String image;
+    private boolean promo;
     private Boolean nouveau;
     private String description;
     private LocalDateTime dateCreation = LocalDateTime.now();

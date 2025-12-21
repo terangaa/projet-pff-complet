@@ -10,28 +10,164 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        body { background-color: #f5f6fa; font-family: 'Segoe UI', sans-serif; }
-        .order-card { position: relative; background: #fff; border-radius: 15px; overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
-        .order-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
-        .order-card img { width: 100%; height: 220px; object-fit: cover; border-radius: 15px 15px 0 0; transition: transform 0.5s; }
-        .order-card:hover img { transform: scale(1.05); }
-        .order-overlay { position: absolute; bottom: -100%; width: 100%; background: rgba(0,0,0,0.75); color: #fff; padding: 15px; display: flex; flex-direction: column; align-items: center; transition: bottom 0.3s, opacity 0.3s; border-radius: 0 0 15px 15px; opacity: 0; }
-        .order-card:hover .order-overlay { bottom: 0; opacity: 1; }
-        .badge-quantity { background-color: #198754; color: #fff; font-weight: 600; padding: 0.4em 0.6em; border-radius: 8px; margin-right: 5px; display: inline-block; }
-        .badge-total { background-color: #ffc107; color: #212529; font-weight: 600; padding: 0.4em 0.6em; border-radius: 8px; display: inline-block; }
-        .btn-float { position: absolute; top: 12px; right: 12px; border-radius: 50%; width: 40px; height: 40px; color: #fff; background: #dc3545; display: flex; justify-content: center; align-items: center; border: none; transition: transform 0.3s, background 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.15); cursor: pointer; z-index: 10; }
-        .btn-float:hover { background-color: #c82333; transform: scale(1.1); }
-        .card-body { padding: 12px; text-align: center; }
-        .card-body h6 { font-weight: 600; font-size: 1rem; margin-bottom: 5px; }
-        #searchInput { max-width: 450px; margin: auto; border-radius: 50px; padding: 0.6rem 1.2rem; box-shadow: 0 3px 12px rgba(0,0,0,0.1); }
-        .order-item { transition: opacity 0.3s ease, transform 0.3s ease; opacity: 1; }
-        .order-item.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; height: 0; margin: 0; padding: 0; }
+        body {
+            background: linear-gradient(135deg, #e6f2ea, #f5f8f5);
+            font-family: 'Segoe UI', sans-serif;
+            color: #333;
+        }
+
+        /* Navbar */
+        .navbar {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .navbar.bg-success {
+            background-color: #198754 !important;
+        }
+
+        /* Titres */
+        h2 {
+            font-weight: 700;
+            color: #198754;
+        }
+
+        /* Barre de recherche */
+        #searchInput {
+            max-width: 500px;
+            margin: auto;
+            border-radius: 50px;
+            padding: 0.6rem 1.2rem;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s;
+        }
+        #searchInput:focus {
+            box-shadow: 0 5px 20px rgba(25,135,84,0.4);
+            outline: none;
+        }
+
+        /* Cartes commandes */
+        .order-card {
+            position: relative;
+            background: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .order-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .order-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 15px 15px 0 0;
+            transition: transform 0.5s;
+        }
+        .order-card:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Overlay détails */
+        .order-overlay {
+            position: absolute;
+            bottom: -100%;
+            width: 100%;
+            background: rgba(0,0,0,0.75);
+            color: #fff;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: bottom 0.3s, opacity 0.3s;
+            border-radius: 0 0 15px 15px;
+            opacity: 0;
+        }
+        .order-card:hover .order-overlay {
+            bottom: 0;
+            opacity: 1;
+        }
+
+        /* Badges */
+        .badge-quantity {
+            background-color: #198754;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.4em 0.6em;
+            border-radius: 8px;
+            margin-right: 5px;
+            display: inline-block;
+        }
+        .badge-total {
+            background-color: #28a745;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.4em 0.6em;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        /* Bouton flottant */
+        .btn-float {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: #fff;
+            background: #198754;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: none;
+            transition: transform 0.3s, background 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            cursor: pointer;
+            z-index: 10;
+        }
+        .btn-float:hover {
+            background-color: #145c32;
+            transform: scale(1.1);
+        }
+
+        /* Card Body */
+        .card-body {
+            padding: 12px;
+            text-align: center;
+        }
+        .card-body h6 {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #198754;
+        }
+
+        /* Masquer les éléments pour recherche */
+        .order-item {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 1;
+        }
+        .order-item.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            height: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Footer */
+        footer {
+            font-size: 0.9rem;
+            background-color: #198754;
+        }
     </style>
 </head>
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold" th:href="@{/dashboard}">🌾 Plateforme Agricole</a>
         <div class="d-flex align-items-center ms-auto">
@@ -65,7 +201,7 @@
                     <p th:text="${commande.produit.description}">Description du produit</p>
                     <span class="badge-quantity">Quantité : <span th:text="${commande.quantite}">1</span></span>
                     <span class="badge-total">Prix total : <span th:text="${commande.prixTotal}">0</span> FCFA</span>
-                    <p class="text-muted small mt-2" th:text="${#temporals.format(commande.dateCommande, 'dd/MM/yyyy HH:mm')}">01/01/2025 12:00</p>
+                    <p class="text-light small mt-2" th:text="${#temporals.format(commande.dateCommande, 'dd/MM/yyyy HH:mm')}">01/01/2025 12:00</p>
                 </div>
                 <div class="card-body mt-2">
                     <h6 class="fw-bold" th:text="${commande.produit.nom}">Nom Produit</h6>
@@ -88,16 +224,9 @@
             </li>
         </ul>
     </nav>
-
-    <!-- Bouton retour au catalogue -->
-    <div class="text-center mt-5">
-        <a th:href="@{/achats}" class="btn btn-outline-primary btn-lg btn-return">
-            <i class="bi bi-arrow-left"></i> Retour au catalogue
-        </a>
-    </div>
 </div>
 
-<footer class="bg-primary text-white text-center py-3 mt-5 shadow-sm">
+<footer class="text-white text-center py-3 mt-5 shadow-sm">
     <p class="mb-0">© 2025 - Plateforme Agricole - Mes Commandes</p>
 </footer>
 

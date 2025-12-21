@@ -44,4 +44,8 @@ public class DemandeProduitService {
     public Optional<DemandeProduit> findById(Long id) {
         return repository.findById(id);
     }
+
+    public List<DemandeProduit> findByUtilisateurEmail(String email) {
+        return demandeProduitRepository.findByUtilisateurEmail(email);
+    }
 }

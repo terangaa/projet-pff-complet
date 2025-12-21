@@ -4,82 +4,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Créer un produit - Admin</title>
+
+    <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        /* Arrière-plan animé type plateforme e-commerce */
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #eaf5ea, #c8f0c8, #f0fff0);
             min-height: 100vh;
-            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
-            position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            color: #1b1b1b;
         }
 
-        /* Bulles animées */
-        .bubble {
+        /* Bulles vertes animées */
+        .shape {
             position: absolute;
             border-radius: 50%;
-            background: rgba(255,255,255,0.15);
-            animation: float 20s linear infinite;
+            filter: blur(50px);
+            opacity: 0.15;
+            animation: pulse 12s infinite alternate;
         }
-        @keyframes float {
-            0% { transform: translateY(100vh) scale(0.5); opacity: 0.3; }
-            50% { opacity: 0.6; }
-            100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+        .shape1 { width: 200px; height: 200px; background: #a8e0a8; top: 12%; left: 5%; }
+        .shape2 { width: 270px; height: 270px; background: #d0f0d0; bottom: 10%; right: 6%; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: .1; }
+            100% { transform: scale(1.15); opacity: .25; }
         }
 
-        /* Card style moderne glass */
-        .card {
-            position: relative;
-            z-index: 1;
-            border-radius: 2rem;
-            background-color: rgba(255,255,255,0.85);
+        /* Carte du formulaire glass + lisible */
+        .card-custom {
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
-            padding: 2rem;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            transition: transform 0.3s;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 650px;
+            animation: slideUp 0.7s ease;
+            border: 1px solid rgba(76,175,80,0.3);
         }
-        .card:hover { transform: translateY(-5px); }
 
-        /* Inputs & Buttons */
-        .form-label { font-weight: 500; }
-        .input-group-text { background-color: #e9ecef; border-radius: 0.5rem; }
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Titres */
+        h2 {
+            font-weight: 700;
+            font-size: 2rem;
+            color: #2e7d32;
+        }
+        p.sub-title {
+            font-size: 1rem;
+            color: #4caf50;
+        }
+
+        /* Inputs et selects */
+        .form-control, .form-select {
+            border-radius: 12px;
+            padding: .75rem 1rem;
+            border: 1px solid rgba(0,0,0,0.15);
+            background: #ffffff;
+            color: #1b1b1b;
+        }
+        .form-control::placeholder, .form-select option {
+            color: #555;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #4caf50;
+            box-shadow: 0 0 0 .2rem rgba(76,175,80,0.2);
+            background: #f8fff8;
+        }
+
+        .input-group-text {
+            background: #f0fff0;
+            color: #2e7d32;
+            border-radius: 10px 0 0 10px;
+            border: 1px solid rgba(76,175,80,0.3);
+        }
+
+        /* Boutons verts */
         .btn-primary {
-            background: linear-gradient(135deg, #0d6efd, #6610f2);
+            background: linear-gradient(135deg, #4caf50, #81c784);
+            padding: .7rem 1.4rem;
             border: none;
-            transition: all 0.3s;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(76,175,80,0.4);
+            transition: .3s;
         }
-        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,0,0,0.25); background: linear-gradient(135deg, #6610f2, #0d6efd); }
-        .btn-outline-secondary { border-radius: 50px; }
-        #prixTotal { font-size: 1.25rem; font-weight: bold; color: #0d6efd; text-align: center; }
-        .form-control:focus { box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25); }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(76,175,80,0.6);
+        }
 
-        /* Preview image hover */
+        /* Image preview */
         #preview {
             max-height: 180px;
-            margin-top: 10px;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: 14px;
+            margin-top: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: .3s;
         }
-        #preview:hover { transform: scale(1.08); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        #preview:hover { transform: scale(1.03); }
     </style>
 </head>
+
 <body>
 
-<!-- Bulles -->
-<div class="bubble" style="width: 60px; height:60px; left:10%; animation-duration:25s;"></div>
-<div class="bubble" style="width: 100px; height:100px; left:50%; animation-duration:35s;"></div>
-<div class="bubble" style="width: 80px; height:80px; left:80%; animation-duration:30s;"></div>
-<div class="bubble" style="width: 50px; height:50px; left:30%; animation-duration:40s;"></div>
+<!-- Bulles vertes -->
+<div class="shape shape1"></div>
+<div class="shape shape2"></div>
 
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card shadow-lg">
+    <div class="card-custom">
+
         <div class="text-center mb-4">
-            <i class="bi bi-box-seam fs-1 text-primary"></i>
-            <h2 class="mt-2 fw-bold">Créer un nouveau produit</h2>
-            <p class="text-muted">Veuillez remplir les informations ci-dessous</p>
+            <i class="bi bi-box2-heart fs-1 text-success"></i>
+            <h2 class="mt-3">Créer un Nouveau Produit</h2>
+            <p class="sub-title">Ajoutez un article à votre catalogue</p>
         </div>
 
         <!-- Messages -->
@@ -90,74 +142,63 @@
 
             <!-- Nom -->
             <div class="mb-3">
-                <label for="nom" class="form-label">Nom du produit</label>
+                <label class="form-label">Nom du produit</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                    <input type="text" id="nom" th:field="*{nom}" class="form-control" placeholder="Ex : Tomates bio" required/>
+                    <input th:field="*{nom}" class="form-control" placeholder="Ex : Tomates bio" required>
                 </div>
             </div>
 
             <!-- Description -->
             <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea id="description" th:field="*{description}" class="form-control" rows="3"
-                          placeholder="Ex : Tomates fraîches cultivées sans pesticides"></textarea>
+                <label class="form-label">Description</label>
+                <textarea th:field="*{description}" class="form-control" rows="3" placeholder="Ex : Produit frais et naturel"></textarea>
             </div>
 
-            <!-- Prix unitaire -->
+            <!-- Prix -->
             <div class="mb-3">
-                <label for="prix" class="form-label">Prix unitaire (FCFA)</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                    <input type="number" id="prix" th:field="*{prix}" step="0.01" min="0"
-                           class="form-control" placeholder="Ex : 500" required oninput="updatePrixTotal()"/>
-                </div>
+                <label class="form-label">Prix unitaire (FCFA)</label>
+                <input type="number" th:field="*{prix}" class="form-control" placeholder="Ex : 1000" required oninput="updatePrixTotal()">
             </div>
 
             <!-- Quantité -->
             <div class="mb-3">
-                <label for="quantite" class="form-label">Quantité</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-stack"></i></span>
-                    <input type="number" id="quantite" th:field="*{quantite}" class="form-control"
-                           placeholder="Ex : 50" min="1" required oninput="updatePrixTotal()"/>
-                </div>
+                <label class="form-label">Quantité</label>
+                <input type="number" th:field="*{quantite}" min="1" class="form-control" placeholder="Ex : 20" required oninput="updatePrixTotal()">
             </div>
 
-            <!-- Prix total -->
+            <!-- Prix Total -->
             <div class="mb-3">
                 <label class="form-label">Prix total estimé</label>
-                <input type="text" id="prixTotal" class="form-control bg-light" readonly>
+                <input type="text" id="prixTotal" class="form-control bg-light fw-bold" readonly>
             </div>
 
             <!-- Image -->
             <div class="mb-3">
-                <label for="image" class="form-label">Image du produit</label>
-                <input type="file" id="image" name="imageFile" class="form-control" accept="image/*"
-                       onchange="previewImage(event)"/>
-                <img id="preview" src="#" alt="Aperçu de l’image" class="d-none"/>
+                <label class="form-label">Image du produit</label>
+                <input type="file" name="imageFile" class="form-control" accept="image/*" onchange="previewImage(event)">
+                <img id="preview" src="#" class="d-none">
             </div>
 
             <!-- Producteur -->
             <div class="mb-4">
-                <label for="agriculteur" class="form-label">Sélectionner un producteur (facultatif)</label>
-                <select id="agriculteur" name="agriculteurId" class="form-select">
-                    <option value="">-- Aucun producteur --</option>
-                    <option th:each="prod : ${agriculteurs}"
-                            th:value="${prod.id}"
-                            th:text="${prod.prenom + ' ' + prod.nom}"></option>
+                <label class="form-label">Choisir un producteur</label>
+                <select name="agriculteurId" class="form-select">
+                    <option value="">-- Aucun --</option>
+                    <option th:each="prod : ${agriculteurs}" th:value="${prod.id}" th:text="${prod.prenom + ' ' + prod.nom}"></option>
                 </select>
             </div>
 
             <!-- Boutons -->
             <div class="d-flex justify-content-between">
-                <a th:href="@{/produits}" class="btn btn-outline-secondary">
+                <a th:href="@{/produits}" class="btn btn-light">
                     <i class="bi bi-arrow-left"></i> Retour
                 </a>
                 <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-check-circle"></i> Créer
+                    <i class="bi bi-check-circle"></i> Créer le produit
                 </button>
             </div>
+
         </form>
     </div>
 </div>
@@ -171,13 +212,15 @@
             const reader = new FileReader();
             reader.onload = e => { preview.src = e.target.result; preview.classList.remove('d-none'); };
             reader.readAsDataURL(input.files[0]);
-        } else { preview.src="#"; preview.classList.add('d-none'); }
+        }
     }
     function updatePrixTotal() {
-        const prix = parseFloat(document.getElementById('prix').value) || 0;
-        const quantite = parseInt(document.getElementById('quantite').value) || 0;
-        document.getElementById('prixTotal').value = (prix * quantite).toLocaleString('fr-FR') + " FCFA";
+        const prix = parseFloat(document.querySelector("[name='prix']").value) || 0;
+        const quantite = parseInt(document.querySelector("[name='quantite']").value) || 0;
+        document.getElementById('prixTotal').value =
+            (prix * quantite).toLocaleString('fr-FR') + " FCFA";
     }
 </script>
+
 </body>
 </html>

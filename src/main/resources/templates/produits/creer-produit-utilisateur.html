@@ -1,32 +1,458 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Ajouter un produit existant</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Arrière-plan vert élégant */
+        body {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 25%, #a5d6a7 50%, #81c784 75%, #66bb6a 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Effets de fond avec motifs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                    radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 20%),
+                    radial-gradient(circle at 85% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 20%),
+                    radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 20%);
+            z-index: -1;
+        }
+
+        /* Feuilles décoratives */
+        body::after {
+            content: '';
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(102, 187, 106, 0.1) 0%, transparent 70%);
+            top: -250px;
+            right: -250px;
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        /* Styles pour les notifications élégantes */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+        }
+
+        .toast-notification {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            margin-bottom: 15px;
+            animation: slideInRight 0.5s ease-out;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .toast-success {
+            border-left: 6px solid #2e7d32;
+            background: linear-gradient(135deg, rgba(200, 230, 201, 0.95) 0%, rgba(165, 214, 167, 0.95) 100%);
+        }
+
+        .toast-error {
+            border-left: 6px solid #c62828;
+            background: linear-gradient(135deg, rgba(255, 205, 210, 0.95) 0%, rgba(239, 154, 154, 0.95) 100%);
+        }
+
+        .toast-header-success {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #1b5e20;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .toast-header-error {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: #b71c1c;
+            border-bottom: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Confirmation en plein écran */
+        .fullscreen-confirmation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 99999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .confirmation-content {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            border: 2px solid #66bb6a;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        .confirmation-icon {
+            font-size: 80px;
+            color: #2e7d32;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        .confirmation-loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #2e7d32;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Styles pour la carte */
+        .card {
+            border: none;
+            border-radius: 25px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .card-body {
+            padding: 2.5rem;
+        }
+
+        /* Bouton amélioré avec thème vert */
+        .btn-primary {
+            background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 14px 35px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(67, 160, 71, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(67, 160, 71, 0.4);
+            background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+        }
+
+        .btn-outline-secondary {
+            border-radius: 12px;
+            padding: 12px 30px;
+            border: 2px solid #66bb6a;
+            color: #2e7d32;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #66bb6a;
+            color: white;
+            border-color: #66bb6a;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-danger {
+            border-radius: 12px;
+            padding: 12px 30px;
+            transition: all 0.3s ease;
+            border: 2px solid #e53935;
+            color: #c62828;
+            font-weight: 600;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #e53935;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(229, 57, 53, 0.3);
+        }
+
+        /* Icônes animées */
+        .icon-animate {
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Formulaires améliorés */
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #66bb6a;
+            box-shadow: 0 0 0 0.25rem rgba(102, 187, 106, 0.25);
+        }
+
+        .form-control-lg {
+            border-radius: 15px;
+            padding: 16px 20px;
+        }
+
+        /* Input group amélioré */
+        .input-group-text {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 2px solid #e0e0e0;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        /* Modal amélioré */
+        .modal-content {
+            border-radius: 25px;
+            border: none;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+            border-bottom: none;
+            padding: 1.5rem 2rem;
+        }
+
+        /* Titres et texte */
+        h2 {
+            background: linear-gradient(135deg, #2e7d32, #43a047);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .text-muted {
+            color: #666 !important;
+        }
+
+        /* Badge vert */
+        .badge-green {
+            background: linear-gradient(135deg, #66bb6a, #43a047);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* Section de prix total */
+        .total-section {
+            background: linear-gradient(135deg, rgba(232, 245, 233, 0.8) 0%, rgba(200, 230, 201, 0.8) 100%);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(102, 187, 106, 0.3);
+        }
+
+        /* Animation de particules */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(102, 187, 106, 0.1);
+            border-radius: 50%;
+            animation: floatParticle 15s infinite linear;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .btn-primary, .btn-outline-secondary, .btn-outline-danger {
+                padding: 10px 20px;
+            }
+
+            .confirmation-content {
+                padding: 25px;
+                margin: 20px;
+            }
+        }
+    </style>
 </head>
 <body class="bg-light">
 
+<!-- Écran de confirmation en plein écran -->
+<div id="fullscreenConfirmation" class="fullscreen-confirmation">
+    <div class="confirmation-content">
+        <div class="confirmation-icon">
+            <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <h2 class="mb-3" style="color: #2e7d32;">Demande Envoyée !</h2>
+        <p id="confirmationMessage" class="mb-4">Votre demande est en cours d'envoi...</p>
+
+        <!-- Loader pendant l'envoi -->
+        <div id="confirmationLoader" class="confirmation-loader"></div>
+
+        <!-- Message de succès (affiché après l'envoi) -->
+        <div id="successMessage" style="display: none;">
+            <div class="alert alert-success mt-3">
+                <i class="bi bi-check-circle me-2"></i>
+                <strong>Succès !</strong> Votre demande a été envoyée avec succès.
+            </div>
+            <p class="text-muted mt-3">
+                Notre équipe examinera votre demande dans les plus brefs délais.
+            </p>
+            <button id="closeConfirmation" class="btn btn-primary mt-4">
+                <i class="bi bi-check-lg me-2"></i> Compris
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Particules décoratives -->
+<div class="particles" id="particles"></div>
+
+<!-- Container pour les notifications -->
+<div class="notification-container">
+    <!-- Notification de succès -->
+    <div th:if="${success}" class="toast toast-notification toast-success" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header toast-header-success">
+            <i class="bi bi-check-circle-fill me-2" style="font-size: 1.2rem;"></i>
+            <strong class="me-auto">Succès</strong>
+            <small class="text-muted">à l'instant</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                    <i class="bi bi-check-circle text-success fs-4 me-3"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <p class="mb-0 fw-medium" th:text="${success}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification d'erreur -->
+    <div th:if="${error}" class="toast toast-notification toast-error" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header toast-header-error">
+            <i class="bi bi-exclamation-triangle-fill me-2" style="font-size: 1.2rem;"></i>
+            <strong class="me-auto">Erreur</strong>
+            <small class="text-muted">à l'instant</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                    <i class="bi bi-x-circle text-danger fs-4 me-3"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <p class="mb-0 fw-medium" th:text="${error}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
     <div class="card shadow-lg p-4 rounded-4 w-100" style="max-width: 700px;">
-        <div class="text-center mb-4">
-            <i class="bi bi-box-seam fs-1 text-primary"></i>
-            <h2 class="mt-2">Ajouter un produit existant</h2>
+        <div class="text-center mb-5">
+            <i class="bi bi-box-seam icon-animate fs-1" style="color: #2e7d32;"></i>
+            <h2 class="mt-3 fw-bold">Ajouter un produit existant</h2>
             <p class="text-muted">Sélectionnez un produit existant et indiquez la quantité à ajouter au stock</p>
+            <span class="badge-green mt-2">🌱 Interface Agricole</span>
         </div>
-
-        <!-- Messages -->
-        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
         <!-- Formulaire -->
         <form th:action="@{/produits/creer-utilisateur}" method="post">
 
             <!-- Sélection produit -->
-            <div class="mb-3">
-                <label for="produitSelect" class="form-label fw-semibold">Sélectionner un produit</label>
-                <select id="produitSelect" name="produitId" class="form-select" required>
+            <div class="mb-4">
+                <label for="produitSelect" class="form-label fw-semibold">
+                    <i class="bi bi-box me-2" style="color: #2e7d32;"></i>Sélectionner un produit
+                </label>
+                <select id="produitSelect" name="produitId" class="form-select form-select-lg" required>
                     <option value="" disabled selected>-- Choisissez un produit --</option>
                     <option th:each="p : ${produitsDisponibles}"
                             th:value="${p.id}"
@@ -39,73 +465,121 @@
             </div>
 
             <!-- Description -->
-            <div class="mb-3">
-                <label for="description" class="form-label fw-semibold">Description</label>
-                <textarea id="description" class="form-control" rows="3" readonly></textarea>
+            <div class="mb-4">
+                <label for="description" class="form-label fw-semibold">
+                    <i class="bi bi-card-text me-2" style="color: #2e7d32;"></i>Description
+                </label>
+                <textarea id="description" class="form-control" rows="3" readonly
+                          style="background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e9 100%); resize: none; border-color: #a5d6a7;"></textarea>
             </div>
 
             <!-- Prix unitaire -->
-            <div class="mb-3">
-                <label for="prixUnitaire" class="form-label fw-semibold">Prix unitaire (FCFA)</label>
-                <input type="number" id="prixUnitaire" class="form-control" readonly/>
+            <div class="mb-4">
+                <label for="prixUnitaire" class="form-label fw-semibold">
+                    <i class="bi bi-currency-exchange me-2" style="color: #2e7d32;"></i>Prix unitaire (FCFA)
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-tag" style="color: #2e7d32;"></i>
+                    </span>
+                    <input type="number" id="prixUnitaire" class="form-control" readonly/>
+                </div>
             </div>
 
             <!-- Quantité -->
-            <div class="mb-3">
-                <label for="quantite" class="form-label fw-semibold">Quantité à ajouter</label>
-                <input type="number" id="quantite" name="quantite" class="form-control" min="1" required/>
-                <small id="stockInfo" class="text-muted"></small>
+            <div class="mb-4">
+                <label for="quantite" class="form-label fw-semibold">
+                    <i class="bi bi-boxes me-2" style="color: #2e7d32;"></i>Quantité à ajouter
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-plus-circle" style="color: #2e7d32;"></i>
+                    </span>
+                    <input type="number" id="quantite" name="quantite" class="form-control" min="1" value="1" required/>
+                    <span class="input-group-text">unités</span>
+                </div>
+                <div class="mt-2">
+                    <small id="stockInfo" class="text-muted">
+                        <i class="bi bi-info-circle me-1" style="color: #43a047;"></i>
+                        Stock disponible actuel : <span id="currentStock" class="fw-bold">0</span> unités
+                    </small>
+                </div>
             </div>
 
             <!-- Prix total affiché -->
-            <div class="mb-2">
-                <span id="prixAffiche" class="fw-bold text-success"></span>
+            <div class="mb-4 total-section">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold" style="color: #2e7d32;">
+                        <i class="bi bi-calculator me-2"></i>Total estimé
+                    </span>
+                    <span id="prixAffiche" class="fs-5 fw-bold" style="color: #1b5e20;">0 FCFA</span>
+                </div>
             </div>
 
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between mt-4">
                 <a th:href="@{/produits}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Retour
+                    <i class="bi bi-arrow-left me-2"></i> Retour
                 </a>
                 <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Ajouter au stock
+                    <i class="bi bi-plus-circle me-2"></i> Ajouter au stock
                 </button>
             </div>
         </form>
 
         <!-- Bouton produit manquant -->
-        <div class="text-center mt-4">
+        <div class="text-center mt-5 pt-4 border-top" style="border-color: #c8e6c9 !important;">
+            <p class="text-muted mb-3">Le produit que vous cherchez n'est pas dans la liste ?</p>
             <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#produitManquantModal">
-                <i class="bi bi-envelope"></i> Produit manquant ?
+                <i class="bi bi-envelope-paper me-2"></i> Demander l'ajout d'un produit
             </button>
         </div>
     </div>
 </div>
 
-<!-- Modal : Demande d’ajout de produit -->
+<!-- Modal : Demande d'ajout de produit -->
 <div class="modal fade" id="produitManquantModal" tabindex="-1" aria-labelledby="produitManquantLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content rounded-4 shadow">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="produitManquantLabel">
-                    <i class="bi bi-box-seam"></i> Demander l’ajout d’un produit
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow border-0">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold text-white" id="produitManquantLabel">
+                    <i class="bi bi-box-seam me-2"></i> Demander un nouveau produit
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
-            <div class="modal-body">
-                <form th:action="@{/produits/demande-ajout}" method="post">
-                    <div class="mb-3">
-                        <label for="nomProduit" class="form-label fw-semibold">Nom du produit</label>
+            <div class="modal-body p-4">
+                <div class="alert alert-info mb-4" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-color: #64b5f6;">
+                    <i class="bi bi-info-circle me-2" style="color: #1976d2;"></i>
+                    Notre équipe examinera votre demande et l'ajoutera dans les plus brefs délais.
+                </div>
+
+                <form id="demandeForm" th:action="@{/produits/demande-ajout}" method="post" onsubmit="return handleDemandeSubmit(event)">
+                    <div class="mb-4">
+                        <label for="nomProduit" class="form-label fw-semibold">
+                            <i class="bi bi-box me-2" style="color: #2e7d32;"></i>Nom du produit
+                        </label>
                         <input type="text" id="nomProduit" name="nomProduit" class="form-control" required
-                               placeholder="Ex : Riz parfumé, Oignon violet..."/>
+                               placeholder="Ex : Riz parfumé, Oignon violet, Carotte bio..."
+                               autocomplete="off"/>
+                        <small class="text-muted">Nom précis du produit que vous souhaitez ajouter</small>
                     </div>
-                    <div class="mb-3">
-                        <label for="message" class="form-label fw-semibold">Message (optionnel)</label>
+
+                    <div class="mb-4">
+                        <label for="message" class="form-label fw-semibold">
+                            <i class="bi bi-chat-dots me-2" style="color: #2e7d32;"></i>Message (optionnel)
+                        </label>
                         <textarea id="message" name="message" class="form-control" rows="3"
-                                  placeholder="Ex : Bonjour, je ne trouve pas ce produit dans la liste..."></textarea>
+                                  placeholder="Ex : Bonjour, je souhaiterais vendre ce produit dans ma boutique.
+Il s'agit d'un produit local de qualité.
+Informations supplémentaires : ..."></textarea>
+                        <small class="text-muted">Vous pouvez préciser des détails sur le produit</small>
                     </div>
+
                     <div class="text-end">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-send"></i> Envoyer la demande
+                        <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-2"></i> Annuler
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitDemandeBtn">
+                            <i class="bi bi-send me-2"></i> Envoyer la demande
                         </button>
                     </div>
                 </form>
@@ -117,12 +591,202 @@
 <!-- Scripts JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // Créer des particules décoratives
+    function createParticles() {
+        const container = document.getElementById('particles');
+        const particleCount = 20;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+
+            // Taille aléatoire
+            const size = Math.random() * 60 + 20;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+
+            // Position aléatoire
+            particle.style.left = `${Math.random() * 100}%`;
+
+            // Délai d'animation aléatoire
+            particle.style.animationDelay = `${Math.random() * 15}s`;
+
+            // Opacité aléatoire
+            particle.style.opacity = Math.random() * 0.1 + 0.05;
+
+            container.appendChild(particle);
+        }
+    }
+
+    // Fonction pour afficher la confirmation en plein écran
+    function showFullscreenConfirmation(nomProduit) {
+        const confirmationDiv = document.getElementById('fullscreenConfirmation');
+        const confirmationMessage = document.getElementById('confirmationMessage');
+        const loader = document.getElementById('confirmationLoader');
+        const successMessage = document.getElementById('successMessage');
+
+        // Mettre à jour le message avec le nom du produit
+        confirmationMessage.innerHTML = `
+            <strong>Détails de votre demande :</strong><br>
+            <span style="color: #2e7d32;">${nomProduit}</span><br><br>
+            <small class="text-muted">Envoi en cours...</small>
+        `;
+
+        // Afficher la confirmation
+        confirmationDiv.style.display = 'flex';
+
+        // Simuler l'envoi pendant 2 secondes
+        setTimeout(() => {
+            // Cacher le loader
+            loader.style.display = 'none';
+
+            // Afficher le message de succès
+            successMessage.style.display = 'block';
+
+            // Mettre à jour le message de confirmation
+            confirmationMessage.innerHTML = `
+                <strong>✅ Demande envoyée avec succès !</strong><br><br>
+                <span style="color: #2e7d32;">"${nomProduit}"</span><br><br>
+                <small class="text-muted">Votre demande a été transmise à l'administrateur.</small>
+            `;
+        }, 2000);
+    }
+
+    // Fermer la confirmation
+    function closeConfirmation() {
+        const confirmationDiv = document.getElementById('fullscreenConfirmation');
+        const loader = document.getElementById('confirmationLoader');
+        const successMessage = document.getElementById('successMessage');
+
+        // Cacher la confirmation
+        confirmationDiv.style.display = 'none';
+
+        // Réinitialiser
+        loader.style.display = 'block';
+        successMessage.style.display = 'none';
+
+        // Fermer le modal Bootstrap
+        const modal = bootstrap.Modal.getInstance(document.getElementById('produitManquantModal'));
+        if (modal) {
+            modal.hide();
+        }
+    }
+
+    // Gérer la soumission du formulaire de demande
+    function handleDemandeSubmit(event) {
+        event.preventDefault();
+
+        const nomProduit = document.getElementById('nomProduit').value.trim();
+        const message = document.getElementById('message').value.trim();
+        const submitBtn = document.getElementById('submitDemandeBtn');
+
+        if (!nomProduit) {
+            alert('Veuillez saisir le nom du produit.');
+            return false;
+        }
+
+        // Sauvegarder le texte original du bouton
+        const originalText = submitBtn.innerHTML;
+
+        // Afficher l'état de chargement
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i> Envoi en cours...';
+        submitBtn.disabled = true;
+
+        // Afficher la confirmation en plein écran
+        showFullscreenConfirmation(nomProduit);
+
+        // Préparer les données du formulaire
+        const form = event.target;
+        const formData = new FormData(form);
+
+        // Envoyer la requête AJAX
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Succès - le formulaire a été soumis
+                    console.log('Demande envoyée avec succès');
+
+                    // Réinitialiser le formulaire après 2 secondes
+                    setTimeout(() => {
+                        form.reset();
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }, 2000);
+                } else {
+                    throw new Error('Erreur lors de l\'envoi');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+
+                // En cas d'erreur, réactiver le bouton
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+
+                // Afficher un message d'erreur dans la confirmation
+                const confirmationMessage = document.getElementById('confirmationMessage');
+                const loader = document.getElementById('confirmationLoader');
+                const successMessage = document.getElementById('successMessage');
+
+                loader.style.display = 'none';
+                successMessage.style.display = 'none';
+
+                confirmationMessage.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>Erreur</strong><br>
+                    Une erreur est survenue lors de l'envoi de votre demande.
+                </div>
+                <button onclick="closeConfirmation()" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i> Réessayer
+                </button>
+            `;
+            });
+
+        // Empêcher la soumission normale du formulaire
+        return false;
+    }
+
+    // Initialisation des toasts Bootstrap
+    document.addEventListener('DOMContentLoaded', function() {
+        // Créer les particules
+        createParticles();
+
+        // Afficher automatiquement les toasts s'ils existent
+        const toastElList = [].slice.call(document.querySelectorAll('.toast'));
+        toastElList.map(function(toastEl) {
+            return new bootstrap.Toast(toastEl, {
+                autohide: true,
+                delay: 5000
+            }).show();
+        });
+
+        // Fermer automatiquement après 5 secondes
+        setTimeout(() => {
+            toastElList.forEach(toastEl => {
+                bootstrap.Toast.getInstance(toastEl)?.hide();
+            });
+        }, 5000);
+
+        // Initialiser les champs du formulaire
+        if (selectProduit?.value) mettreAJourProduit();
+
+        // Écouter le bouton de fermeture de confirmation
+        document.getElementById('closeConfirmation')?.addEventListener('click', closeConfirmation);
+    });
+
     const selectProduit = document.getElementById('produitSelect');
     const inputDescription = document.getElementById('description');
     const inputPrixUnitaire = document.getElementById('prixUnitaire');
     const inputQuantite = document.getElementById('quantite');
     const prixAffiche = document.getElementById('prixAffiche');
-    const stockInfo = document.getElementById('stockInfo');
+    const currentStock = document.getElementById('currentStock');
 
     function mettreAJourProduit() {
         const option = selectProduit.selectedOptions[0];
@@ -130,27 +794,37 @@
 
         const stock = parseFloat(option.getAttribute('data-stock')) || 0;
         const prix = parseFloat(option.getAttribute('data-prix')) || 0;
+        const description = option.getAttribute('data-description') || '';
 
-        inputDescription.value = option.getAttribute('data-description');
-        inputPrixUnitaire.value = prix;
-        stockInfo.textContent = `Stock disponible actuel : ${stock.toFixed(2)} unités`;
+        inputDescription.value = description;
+        inputPrixUnitaire.value = prix.toLocaleString('fr-FR');
+        currentStock.textContent = stock.toLocaleString('fr-FR');
+        currentStock.style.color = stock > 0 ? '#2e7d32' : '#c62828';
 
         calculerPrix();
     }
 
     function calculerPrix() {
-        const prixUnit = parseFloat(inputPrixUnitaire.value) || 0;
+        const prixUnit = parseFloat(selectProduit.selectedOptions[0]?.getAttribute('data-prix')) || 0;
         const quantite = parseFloat(inputQuantite.value) || 0;
         const total = prixUnit * quantite;
-        prixAffiche.textContent = quantite > 0 ? `Total : ${total.toLocaleString('fr-FR')} FCFA` : '';
+
+        if (quantite > 0) {
+            prixAffiche.textContent = `${total.toLocaleString('fr-FR')} FCFA`;
+            prixAffiche.style.color = '#1b5e20';
+            prixAffiche.style.textShadow = '0 2px 4px rgba(0,0,0,0.1)';
+        } else {
+            prixAffiche.textContent = '0 FCFA';
+            prixAffiche.style.color = '#666';
+            prixAffiche.style.textShadow = 'none';
+        }
     }
 
+    // Événements
     selectProduit?.addEventListener('change', mettreAJourProduit);
-    inputQuantite?.addEventListener('input', calculerPrix);
-
-    document.addEventListener('DOMContentLoaded', () => {
-        if (selectProduit?.value) mettreAJourProduit();
+    inputQuantite?.addEventListener('input', function() {
+        if (this.value < 1) this.value = 1;
+        calculerPrix();
     });
 </script>
 </body>
-</html>

@@ -147,13 +147,20 @@ public class ProduitController {
     @Secured("ROLE_AGRICULTEUR")
     public String creerProduitUtilisateurForm(Model model, Principal principal) {
 
-        // 🔹 Récupère uniquement les produits avec un producteur
         List<Produit> produitsDisponibles = produitRepository.findByAgriculteurIsNotNull();
         model.addAttribute("produitsDisponibles", produitsDisponibles);
 
         Producteur currentUserProducteur = producteurService.findByUtilisateurEmail(principal.getName());
+
         if (currentUserProducteur == null) {
-            throw new IllegalStateException("L'utilisateur connecté n'est pas un producteur.");
+            // Message d'erreur plus informatif
+            model.addAttribute("error",
+                    "Vous devez compléter votre profil producteur avant de créer des produits. " +
+                            "Veuillez contacter l'administrateur ou mettre à jour votre profil.");
+
+            // Retourne la vue avec le message d'erreur
+            model.addAttribute("produit", new Produit());
+            return "produits/creer-produit-utilisateur";
         }
 
         model.addAttribute("currentUserProducteurId", currentUserProducteur.getId());
@@ -299,31 +306,63 @@ public class ProduitController {
         return "produits/produit-detail";
     }
 
+    @GetMapping("/demandes")
+    @Secured({"ROLE_AGRICULTEUR", "ROLE_ADMIN"})
+    public String afficherDemandes(Model model, Principal principal) {
+        // Récupère l'utilisateur connecté
+        String email = principal.getName();
+
+        // Récupère les demandes de cet utilisateur
+        List<DemandeProduit> demandes = demandeProduitService.findByUtilisateurEmail(email);
+
+        model.addAttribute("demandes", demandes);
+        return "produits/liste-demandes";
+    }
+
     @PostMapping("/demande-ajout")
     public String demandeAjoutProduit(@RequestParam("nomProduit") String nomProduit,
                                       @RequestParam(value = "message", required = false) String message,
+                                      Principal principal,
                                       RedirectAttributes redirectAttributes) {
-        // ✅ Ici, on crée l'objet DemandeProduit
-        DemandeProduit demande = new DemandeProduit();
-        demande.setNomProduit(nomProduit);
-        demande.setMessage(message);
 
-        // ✅ On enregistre la demande via le service
-        DemandeProduit nouvelleDemande = demandeProduitService.enregistrerDemande(demande);
+        try {
+            // 1. Création de la demande
+            DemandeProduit demande = new DemandeProduit();
+            demande.setNomProduit(nomProduit);
+            demande.setMessage(message);
 
-        // ✅ On envoie l'email à l'admin
-        emailService.envoyerMailAdmin(
-                nouvelleDemande.getId(),
-                nouvelleDemande.getNomProduit(),
-                nouvelleDemande.getMessage()
-        );
+            // 2. Sauvegarde de l'email utilisateur si le champ existe
+            try {
+                demande.setUtilisateurEmail(principal.getName());
+            } catch (Exception e) {
+                // Si le champ n'existe pas, on continue sans
+            }
 
-        redirectAttributes.addFlashAttribute("success",
-                "Votre demande a été envoyée à l’administrateur !");
-        return "redirect:/demandes";
+            // 3. Enregistrement
+            DemandeProduit nouvelleDemande = demandeProduitService.enregistrerDemande(demande);
+
+            // 4. Envoi de l'email à l'admin
+            emailService.envoyerMailAdmin(
+                    nouvelleDemande.getId(),
+                    nouvelleDemande.getNomProduit(),
+                    nouvelleDemande.getMessage()
+            );
+
+            // ✅ MESSAGE DE SUCCÈS QUI S'AFFICHERA
+            redirectAttributes.addFlashAttribute("success",
+                    "✅ Demande envoyée avec succès !\n" +
+                            "Produit : " + nomProduit + "\n" +
+                            "L'administrateur a été notifié et vous répondra sous 48h.");
+
+        } catch (Exception e) {
+            // ✅ MESSAGE D'ERREUR EN CAS DE PROBLÈME
+            redirectAttributes.addFlashAttribute("error",
+                    "❌ Erreur lors de l'envoi de la demande : " + e.getMessage());
+        }
+
+        // 5. Redirection vers la liste des produits
+        return "redirect:/produits";
     }
-
-
 
     @GetMapping("/accepter/{id}")
     public String accepterDemande(@PathVariable Long id, RedirectAttributes redirectAttributes) {

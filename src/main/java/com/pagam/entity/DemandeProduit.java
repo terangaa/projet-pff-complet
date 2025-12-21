@@ -15,6 +15,7 @@ public class DemandeProduit {
 
     private String nomProduit;
     private String message;
-
+    private String utilisateurEmail;
     private String status = "EN_ATTENTE"; // EN_ATTENTE, ACCEPTEE, REFUSEE
+
 }

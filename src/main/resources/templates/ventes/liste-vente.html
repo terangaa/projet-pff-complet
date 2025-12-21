@@ -4,76 +4,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des ventes - 🌾 Gestion Agricole</title>
+    <title>🛒 Liste des ventes - Gestion Agricole</title>
+
+    <!-- Bootstrap + Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
     <style>
-        body { background-color: #f8f9fa; }
-        .cards-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-        .sale-card {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s, opacity 0.5s;
-            width: 100%;
-            max-width: 320px;
-            opacity: 1;
-            transform: translateY(0);
+        /* ===== BACKGROUND VERT PREMIUM ===== */
+        body {
+            background: linear-gradient(135deg, #d8f5d3, #ecfff4, #e0ffe8);
+            background-size: 350% 350%;
+            animation: smoothMove 11s ease infinite;
+            font-family: "Poppins", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .sale-card.hidden { opacity: 0; transform: translateY(20px); pointer-events: none; }
-        .sale-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
-        .sale-card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid #e0e0e0; }
-        .card-body { padding: 15px; }
-        .card-body p { margin-bottom: 0.3rem; }
-        .table-container { background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        @keyframes smoothMove {
+            0% {background-position: 0% 50%}
+            50% {background-position: 100% 50%}
+            100% {background-position: 0% 50%}
+        }
+
+        /* ===== NAVBAR GLASS ===== */
+        .navbar {
+            background: rgba(40,150,70,0.65) !important;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+        }
+        .navbar-brand { font-weight: 800; }
+
+        /* ===== TITLE ===== */
+        h2 {
+            font-weight: 800;
+            color: #1b5e20;
+            letter-spacing: .5px;
+        }
+
+        /* ===== CONTENT SHADOW BOX ===== */
+        .table-container {
+            background: rgba(255,255,255,0.9);
+            border-radius: 26px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            padding: 32px;
+            animation: fadeIn 1s ease;
+        }
+        @keyframes fadeIn {
+            from {opacity:0; transform: translateY(20px)}
+            to {opacity:1; transform: translateY(0)}
+        }
+
+        /* ===== MINI-CARDS MOBILE ===== */
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+        }
+        .sale-card {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.92);
+            overflow: hidden;
+            box-shadow: 0 6px 22px rgba(0,0,0,0.12);
+            transition: 0.35s ease;
+            cursor: pointer;
+        }
+        .sale-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 14px 32px rgba(0,0,0,0.18);
+        }
+        .sale-card img {
+            width: 100%;
+            height: 165px;
+            object-fit: cover;
+            transition: 0.3s ease;
+        }
+        .sale-card:hover img {
+            transform: scale(1.05);
+            filter: brightness(1.05);
+        }
+        .sale-card .card-body {
+            padding: 18px 20px;
+        }
+        .sale-card h5 {
+            font-weight: 700;
+            color: #2a7d3c;
+        }
+
+        /* ===== BADGES ===== */
+        .badge-status {
+            padding: 6px 12px;
+            font-size: .8rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .badge-success { background: #4caf50 !important; }
+        .badge-warning { background: #ffeb3b !important; color: #6d6d00 !important; }
+        .badge-danger { background: #e53935 !important; }
+
+        /* ===== PAGINATION ===== */
+        .pagination .page-link {
+            border-radius: 12px;
+            padding: 8px 14px;
+        }
+        .pagination .active .page-link {
+            background-color: #43a047;
+            border-color: #43a047;
+            color: #fff !important;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 768px) { #cardsContainer { display: none; } }
         @media (max-width: 768px) { .table-responsive { display: none; } }
-        @media (min-width: 769px) { #cardsContainer { display: none; } }
-        input, select { border-radius: 12px; }
+
+        .sale-card.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: rgba(40,150,70,0.85);
+            color: #fff;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            margin-top: auto;
+        }
     </style>
 </head>
+
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold" th:href="@{/dashboard}">🌾 Gestion Agricole</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarMenu">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="btn btn-outline-light me-2" th:href="@{/dashboard}">🏠 Accueil</a></li>
-                <li class="nav-item"><a class="btn btn-outline-light btn-sm rounded-pill" href="/auth/logout"><i class="bi bi-box-arrow-right"></i> Déconnexion</a></li>
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a th:href="@{/dashboard}" class="btn btn-outline-light me-2">🏠 Accueil</a></li>
+                <li class="nav-item">
+                    <a href="/auth/logout" class="btn btn-light btn-sm rounded-pill">
+                        <i class="bi bi-box-arrow-right"></i> Déconnexion
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
 </nav>
 
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-        <h2 class="mb-3 mb-md-0">Liste des ventes</h2>
-        <!-- Bouton Ajouter seulement pour ADMIN -->
-        <a sec:authorize="hasRole('ADMIN')" th:href="@{/ventes/ajouter}" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Ajouter une vente
+<!-- ===== PAGE CONTENT ===== -->
+<div class="container mt-5 pb-5">
+    <div class="d-flex justify-content-between mb-4 flex-wrap">
+        <h2>🛒 Liste des ventes</h2>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/ventes/ajouter}" class="btn btn-success shadow-sm px-3">
+            <i class="bi bi-plus-circle"></i> Ajouter
         </a>
     </div>
 
     <div class="table-container">
-        <!-- Filtres -->
-        <input type="text" id="searchInput" class="form-control mb-2" placeholder="Rechercher client ou produit..." onkeyup="filterCards()">
-        <select id="statusFilter" class="form-select mb-3" onchange="filterCards()">
+        <!-- SEARCH -->
+        <input type="text" id="searchInput" class="form-control mb-2 shadow-sm"
+               placeholder="🔍 Rechercher client ou produit..." onkeyup="filterCards()">
+
+        <select id="statusFilter" class="form-select mb-3 shadow-sm" onchange="filterCards()">
             <option value="">Tous les statuts</option>
             <option value="VALIDEE">Validée</option>
             <option value="EN_COURS">En cours</option>
             <option value="ANNULEE">Annulée</option>
         </select>
 
-        <!-- Desktop Table -->
+        <!-- TABLE DESKTOP -->
         <div th:if="${!ventes.isEmpty()}" class="table-responsive">
-            <table id="venteTable" class="table table-hover align-middle text-center">
+            <table class="table table-hover align-middle text-center table-bordered">
                 <thead class="table-success">
                 <tr>
-                    <th>ID</th><th>Produit</th><th>Client</th><th>Prix</th><th>Quantité</th><th>Montant</th><th>Date</th>
+                    <th>ID</th><th>Produit</th><th>Client</th><th>Prix</th><th>Quantité</th>
+                    <th>Montant</th><th>Date</th>
                     <th sec:authorize="hasRole('ADMIN')">Statut</th>
                     <th sec:authorize="hasRole('ADMIN')">Actions</th>
                 </tr>
@@ -83,79 +197,68 @@
                     <td th:text="${vente.id}"></td>
                     <td>
                         <div class="d-flex align-items-center gap-2">
-                            <img th:src="${vente.produit != null && vente.produit.image != null ? vente.produit.image : '/images/produit-placeholder.png'}"
-                                 style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
-                            <span th:text="${vente.produit != null ? vente.produit.nom : 'Inconnu'}"></span>
+                            <img th:src="${vente.produit?.image != null ? vente.produit.image : '/images/placeholder.png'}"
+                                 style="width:50px;height:50px;object-fit:cover;border-radius:10px;">
+                            <span th:text="${vente.produit?.nom}"></span>
                         </div>
                     </td>
-                    <td th:text="${vente.acheteur != null ? vente.acheteur.nom : 'Inconnu'}"></td>
+                    <td th:text="${vente.acheteur?.nom}"></td>
                     <td th:text="${#numbers.formatDecimal(vente.prix,1,2)} + ' F CFA'"></td>
                     <td th:text="${vente.quantite}"></td>
                     <td th:text="${#numbers.formatDecimal(vente.montantTotal,1,2)} + ' F CFA'"></td>
-                    <td th:text="${vente.dateVente != null ? #temporals.format(vente.dateVente,'dd/MM/yyyy HH:mm') : '-'}"></td>
-
-                    <!-- Statut uniquement ADMIN -->
+                    <td th:text="${#temporals.format(vente.dateVente,'dd/MM/yyyy HH:mm')}"></td>
                     <td sec:authorize="hasRole('ADMIN')">
-                            <span th:switch="${vente.commande != null ? vente.commande.statut : 'Aucune'}">
-                                <span th:case="'VALIDEE'" class="badge bg-success badge-status">Validée</span>
-                                <span th:case="'EN_COURS'" class="badge bg-warning text-dark badge-status">En cours</span>
-                                <span th:case="'ANNULEE'" class="badge bg-danger badge-status">Annulée</span>
-                                <span th:case="*">Aucune</span>
-                            </span>
+                        <span th:switch="${vente.commande?.statut}">
+                            <span th:case="'VALIDEE'" class="badge-status badge-success">Validée</span>
+                            <span th:case="'EN_COURS'" class="badge-status badge-warning">En cours</span>
+                            <span th:case="'ANNULEE'" class="badge-status badge-danger">Annulée</span>
+                            <span th:case="*">Aucune</span>
+                        </span>
                     </td>
-
-                    <!-- Actions uniquement ADMIN -->
-                    <td sec:authorize="hasRole('ADMIN')" class="d-flex justify-content-center gap-1 flex-wrap">
-                        <a th:href="@{/ventes/modifier/{id}(id=${vente.id})}" class="btn btn-sm btn-primary">
-                            <i class="bi bi-pencil"></i> Modifier
-                        </a>
+                    <td sec:authorize="hasRole('ADMIN')" class="d-flex justify-content-center gap-1">
+                        <a th:href="@{/ventes/modifier/{id}(id=${vente.id})}" class="btn btn-sm btn-primary">✏</a>
                         <a th:href="@{/ventes/supprimer/{id}(id=${vente.id})}" class="btn btn-sm btn-danger"
-                           onclick="return confirm('Voulez-vous vraiment supprimer cette vente ?');">
-                            <i class="bi bi-trash"></i> Supprimer
-                        </a>
+                           onclick="return confirm('Supprimer ?')">🗑</a>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- Mobile Cards -->
-        <div id="cardsContainer" class="cards-container mt-3">
-            <div th:each="vente : ${ventes}" class="sale-card card">
-                <img th:src="${vente.produit != null && vente.produit.image != null ? vente.produit.image : '/images/produit-placeholder.png'}" alt="Produit">
+        <!-- MINI CARDS MOBILE -->
+        <div id="cardsContainer" class="cards-container mt-4">
+            <div th:each="vente : ${ventes}" class="sale-card">
+                <img th:src="${vente.produit?.image != null ? vente.produit.image : '/images/placeholder.png'}">
                 <div class="card-body">
-                    <h5 class="card-title" th:text="${vente.produit != null ? vente.produit.nom : 'Inconnu'}" style="font-weight:bold;"></h5>
-                    <p class="mb-1">
-                        <i class="bi bi-person-fill"></i>
-                        <span th:text="${vente.acheteur != null ? (vente.acheteur.prenom != null ? vente.acheteur.prenom + ' ' : '') + (vente.acheteur.nom != null ? vente.acheteur.nom : '') : 'Inconnu'}"></span>
-                    </p>
-                    <p class="mb-1"><i class="bi bi-currency-dollar"></i> <span th:text="${#numbers.formatDecimal(vente.prix,1,2)} + ' F CFA'"></span></p>
-                    <p class="mb-1"><i class="bi bi-box-seam"></i> <span th:text="${vente.quantite}"></span></p>
-                    <p class="mb-1"><i class="bi bi-wallet2"></i> <span th:text="${#numbers.formatDecimal(vente.montantTotal,1,2)} + ' F CFA'"></span></p>
-                    <p class="mb-0 text-muted" style="font-size:0.85rem;"><i class="bi bi-calendar"></i> <span th:text="${vente.dateVente != null ? #temporals.format(vente.dateVente,'dd/MM/yyyy HH:mm'):'-'}"></span></p>
-
-                    <!-- Statut et Actions uniquement ADMIN -->
+                    <h5 th:text="${vente.produit?.nom}"></h5>
+                    <p><i class="bi bi-person-fill text-success"></i> <span th:text="${vente.acheteur?.nom}"></span></p>
+                    <p><i class="bi bi-cash-stack text-success"></i> <span th:text="${#numbers.formatDecimal(vente.prix,1,2)} + ' F CFA'"></span></p>
+                    <p><i class="bi bi-box-seam"></i> Quantité : <span th:text="${vente.quantite}"></span></p>
+                    <p><i class="bi bi-wallet2"></i> <span th:text="${#numbers.formatDecimal(vente.montantTotal,1,2)} + ' F CFA'"></span></p>
+                    <p class="text-muted"><i class="bi bi-calendar"></i> <span th:text="${#temporals.format(vente.dateVente,'dd/MM/yyyy HH:mm')}"></span></p>
                     <div sec:authorize="hasRole('ADMIN')" class="d-flex justify-content-between mt-2">
-                        <a th:href="@{/ventes/modifier/{id}(id=${vente.id})}" class="btn btn-sm btn-primary">
-                            <i class="bi bi-pencil"></i> Modifier
-                        </a>
-                        <a th:href="@{/ventes/supprimer/{id}(id=${vente.id})}" class="btn btn-sm btn-danger"
-                           onclick="return confirm('Voulez-vous vraiment supprimer cette vente ?');">
-                            <i class="bi bi-trash"></i> Supprimer
-                        </a>
+                        <a th:href="@{/ventes/modifier/{id}(id=${vente.id})}" class="btn btn-sm btn-primary">✏</a>
+                        <a th:href="@{/ventes/supprimer/{id}(id=${vente.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ?')">🗑</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Pagination -->
-        <nav class="mt-3 d-flex justify-content-center">
+        <!-- PAGINATION -->
+        <nav class="mt-4 d-flex justify-content-center">
             <ul class="pagination" id="pagination"></ul>
         </nav>
     </div>
 </div>
 
+<!-- ===== FOOTER ===== -->
+<footer class="py-4">
+    <p>🌾 Gestion Agricole &copy; 2025</p>
+    <small>Développé avec ❤️ pour simplifier la gestion des ventes</small>
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
     let currentPage = 1;
     const cardsPerPage = 5;
@@ -164,8 +267,8 @@
         const cards = Array.from(document.querySelectorAll("#cardsContainer .sale-card"));
         const totalPages = Math.ceil(cards.length / cardsPerPage);
 
-        cards.forEach((card,index)=>{
-            if(index >= (currentPage-1)*cardsPerPage && index < currentPage*cardsPerPage){
+        cards.forEach((card, index) => {
+            if (index >= (currentPage - 1) * cardsPerPage && index < currentPage * cardsPerPage) {
                 card.classList.remove('hidden');
             } else {
                 card.classList.add('hidden');
@@ -175,46 +278,42 @@
         const pagination = document.getElementById("pagination");
         pagination.innerHTML = "";
 
-        const prevLi = document.createElement("li");
-        prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-        prevLi.innerHTML = `<a class="page-link" href="#">Précédent</a>`;
-        prevLi.onclick = (e)=>{ e.preventDefault(); if(currentPage>1){currentPage--; showPage();} };
-        pagination.appendChild(prevLi);
+        const prev = document.createElement("li");
+        prev.className = `page-item ${currentPage === 1 ? "disabled" : ""}`;
+        prev.innerHTML = `<a class="page-link">Précédent</a>`;
+        prev.onclick = () => { if(currentPage>1){ currentPage--; showPage(); } };
+        pagination.appendChild(prev);
 
-        for(let i=1;i<=totalPages;i++){
+        for (let i = 1; i <= totalPages; i++){
             const li = document.createElement("li");
-            li.className = `page-item ${i===currentPage ? 'active' : ''}`;
-            li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-            li.onclick = (e)=>{ e.preventDefault(); currentPage=i; showPage(); };
+            li.className = `page-item ${i===currentPage?"active":""}`;
+            li.innerHTML = `<a class="page-link">${i}</a>`;
+            li.onclick = () => { currentPage = i; showPage(); };
             pagination.appendChild(li);
         }
 
-        const nextLi = document.createElement("li");
-        nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-        nextLi.innerHTML = `<a class="page-link" href="#">Suivant</a>`;
-        nextLi.onclick = (e)=>{ e.preventDefault(); if(currentPage<totalPages){currentPage++; showPage();} };
-        pagination.appendChild(nextLi);
+        const next = document.createElement("li");
+        next.className = `page-item ${currentPage===totalPages?"disabled":""}`;
+        next.innerHTML = `<a class="page-link">Suivant</a>`;
+        next.onclick = () => { if(currentPage<totalPages){ currentPage++; showPage(); } };
+        pagination.appendChild(next);
     }
 
     function filterCards() {
-        const input = document.getElementById("searchInput").value.toLowerCase();
-        const statusFilter = document.getElementById("statusFilter").value.toLowerCase();
-        const cards = document.querySelectorAll("#cardsContainer .sale-card");
+        const search = document.getElementById("searchInput").value.toLowerCase();
+        const status = document.getElementById("statusFilter").value.toLowerCase();
 
-        cards.forEach(card=>{
-            const produit = card.querySelector(".card-title").textContent.toLowerCase();
-            const client = card.querySelector("p strong:nth-child(1)")?.nextSibling?.textContent.toLowerCase() || "";
-            const statut = card.querySelector(".badge-status")?.textContent.toLowerCase() || "";
-            if((produit.includes(input) || client.includes(input)) && (!statusFilter || statut.includes(statusFilter))){
-                card.classList.remove('hidden');
-            } else {
-                card.classList.add('hidden');
-            }
+        document.querySelectorAll("#cardsContainer .sale-card").forEach(card => {
+            const produit = card.querySelector("h5").textContent.toLowerCase();
+            const client = card.querySelector("p span").textContent.toLowerCase();
+            card.classList.toggle("hidden", !(produit.includes(search) || client.includes(search)));
         });
-        currentPage = 1; showPage();
+
+        currentPage = 1;
+        showPage();
     }
 
-    window.onload = () => { filterCards(); };
+    window.onload = showPage;
 </script>
 
 </body>
