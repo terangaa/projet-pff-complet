@@ -1,4 +1,4 @@
-name: CI Spring Boot Full Pipeline
+name: CI Spring Boot Full (Build + SonarQube)
 
 on:
   push:
@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout code
+      # 1. Récupérer le code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Setup Java
+      # 2. Setup Java 17
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
@@ -22,23 +22,29 @@ jobs:
           java-version: 17
           cache: maven
 
-      # 3. Build project (sans tests pour éviter MySQL crash)
+      # 3. Build Maven (sans tests pour éviter MySQL error)
       - name: Build project
         run: mvn clean install -DskipTests
 
-      # 4. Run tests séparément (optionnel)
+      # 4. Tests (optionnel)
       - name: Run tests
         run: mvn test
         continue-on-error: true
 
-      # 5. SonarQube analysis
+      # 5. SonarQube Analysis
       - name: SonarQube Scan
-        run: |
-          mvn sonar:sonar \
-          -Dsonar.projectKey=projet-pff-complet \
-          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: mvn sonar:sonar
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # 6. Build artifact (optionnel)
-      - name: Package JAR
+      # 6. Package JAR
+      - name: Build package
         run: mvn package -DskipTests
+
+      # 7. Upload artifact (optionnel)
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: spring-boot-app
+          path: target/*.jar
