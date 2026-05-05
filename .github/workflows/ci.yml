@@ -1,4 +1,4 @@
-name: CI Spring Boot
+name: CI Spring Boot (Jenkins Migration)
 
 on:
   push:
@@ -6,15 +6,32 @@ on:
       - master
 
 jobs:
-  build:
+  pipeline:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      # 1. Checkout (comme Jenkins Git clone)
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      # 2. Setup Java (équivalent agent Jenkins)
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          distribution: temurin
+          java-version: 17
+          cache: maven
 
-      - run: mvn clean install -DskipTests
+      # 3. Build (mvn clean install)
+      - name: Build project
+        run: mvn clean install
+
+      # 4. Tests (Jenkins stage test)
+      - name: Run tests
+        run: mvn test
+
+      # 5. SonarQube (stage sonar Jenkins)
+      - name: SonarQube analysis
+        run: mvn sonar:sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
